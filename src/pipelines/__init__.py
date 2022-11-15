@@ -1,0 +1,1 @@
+from .rmq_publisher_pipeline import RMQPublisherPipeline
