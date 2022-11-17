@@ -1,0 +1,1 @@
+from .rmq_consumer_middleware import RMQConsumerMiddleware
