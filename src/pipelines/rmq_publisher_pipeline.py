@@ -6,10 +6,11 @@ from utils import pika_connection_parameters
 
 class RMQPublisherPipeline:
     def __init__(self):
-        self.channel = BlockingConnection(pika_connection_parameters()).channel()
         self.json_encoder = ScrapyJSONEncoder()
 
     def open_spider(self, spider):
+        self.connection = BlockingConnection(pika_connection_parameters())
+        self.channel = self.connection.channel()
         self.channel.queue_declare(
             queue=spider.publish_queue,
             durable=True
@@ -22,3 +23,6 @@ class RMQPublisherPipeline:
             body=self.json_encoder.encode(item)
         )
         return item
+
+    def close_spider(self, spider):
+        self.connection.close()
