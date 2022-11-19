@@ -8,7 +8,8 @@ class VisicomSpider(Spider):
     name = "visicom"
     custom_settings = {
         "ITEM_PIPELINES": {
-            "pipelines.RMQPublisherPipeline": 800
+            "pipelines.RMQPublisherPipeline": 800,
+            "pipelines.JsonPipeline": 801
         }
     }
 
