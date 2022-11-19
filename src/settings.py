@@ -6,10 +6,13 @@ load_dotenv()
 
 BOT_NAME = 'dtek'
 SPIDER_MODULES = ['spiders']
+COMMANDS_MODULE = "commands"
 NEWSPIDER_MODULE = 'spiders'
 ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+
+USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 VISICOM_API_KEY = os.getenv("VISICOM_API_KEY", "")
