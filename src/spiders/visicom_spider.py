@@ -6,11 +6,6 @@ from scrapy.utils.project import get_project_settings
 
 class VisicomSpider(Spider):
     name = "visicom"
-    alphabet = [
-        "а", "б", "в", "г", "ґ", "д", "е", "є", "ж", "з", "и", "і",
-        "ї", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у",
-        "ф", "х", "ц", "ч", "ш", "щ", "ь", "ю", "я"
-    ]
     custom_settings = {
         "ITEM_PIPELINES": {
             "pipelines.RMQPublisherPipeline": 800
@@ -21,6 +16,7 @@ class VisicomSpider(Spider):
         super(VisicomSpider, self).__init__()
         self.settings = get_project_settings()
         self.publish_queue = self.settings.get("DTEK_QUEUE")
+        self.alphabet = self.settings.get("ALPHABET")
 
     def start_requests(self):
         for letter in self.alphabet:
@@ -28,7 +24,6 @@ class VisicomSpider(Spider):
                 url=f"https://api.visicom.ua/data-api/5.0/uk/geocode.json?categories=adr_street&text={self.settings.get('CITY')}, {letter}&key={self.settings.get('VISICOM_API_KEY')}",
                 callback=self.parse_visicom_streets
             )
-            break
 
     def parse_visicom_streets(self, response):
         response_json = json.loads(response.text)
@@ -43,7 +38,6 @@ class VisicomSpider(Spider):
                             url=f"https://api.visicom.ua/data-api/4.0/uk/search/adr_address.json?text={street}&key={self.settings.get('VISICOM_API_KEY')}",
                             callback=self.parse_visicom_addresses
                         )
-                        return
 
     def parse_visicom_addresses(self, response):
         response_json = json.loads(response.text)
@@ -56,15 +50,21 @@ class VisicomSpider(Spider):
                 feature["properties"]["categories"] == "adr_address":
                     street = feature["properties"]["street"]
                     address = feature["properties"]["name"]
+                    street_type = feature["properties"]["street_type"]
                     if street in addresses:
                         if not address in addresses[street]:
-                            addresses[street].append(address)
+                            addresses[street]["addresses"].append(address)
                     else:
-                        addresses[street] = [address]
+                        addresses[street] = {
+                            "type": street_type,
+                            "addresses": [address]
+                        }
         for address in addresses:
+            self.logger.info(f"New street: {address}")
             yield {
                 "street_variations": self.street_variations(address),
-                "addresses": addresses[address]
+                "type": addresses[address]["type"],
+                "addresses": addresses[address]["addresses"]
             }
 
     @staticmethod
