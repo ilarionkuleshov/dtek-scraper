@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "dtek-scraper"
+version = "0.1.0"
+description = ""
+authors = ["ilarionkuleshov <ilarion.kuleshov@gmail.com>"]
+readme = "README.md"
+packages = [{include = "dtek_scraper"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+scrapy = "^2.7.1"
+python-dotenv = "^0.21.0"
+pika = "^1.3.1"
+playwright = "^1.28.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
